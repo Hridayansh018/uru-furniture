@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   MessageSquare,
@@ -25,6 +25,7 @@ import WhatsAppModal from "@/components/WhatsAppModal";
 import CartModal, { CartItem } from "@/components/CartModal";
 
 export default function AllProductsPage() {
+  const [productsList, setProductsList] = useState<Product[]>(PRODUCTS);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConfig, setSelectedConfig] = useState<string>("All");
   const [selectedFabric, setSelectedFabric] = useState<string>("All");
@@ -35,22 +36,75 @@ export default function AllProductsPage() {
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
   const [whatsAppSubject, setWhatsAppSubject] = useState("");
 
+  // Fetch dynamic Sanity products & images
+  useEffect(() => {
+    async function loadCmsProducts() {
+      try {
+        const res = await fetch("/api/sanity/products");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data.products) && data.products.length > 0) {
+          const mapped: Product[] = data.products.map(
+            (p: {
+              slug: string;
+              name: string;
+              subtitle?: string;
+              description?: string;
+              price?: string;
+              priceNum?: number;
+              dimensions?: string;
+              configurations?: string[];
+              fabrics?: string[];
+              colors?: string[];
+              galleryUrls?: string[];
+              mainImageUrl?: string;
+            }) => {
+              const local = PRODUCTS.find((lp) => lp.id === p.slug);
+              const sanityImgs = [
+                p.mainImageUrl,
+                ...(p.galleryUrls || []),
+              ].filter(Boolean) as string[];
+
+              return {
+                id: p.slug || local?.id || "cloud-01",
+                name: p.name || local?.name || "Cloud Sofa",
+                subtitle: p.subtitle || local?.subtitle || "Quiet luxury.",
+                desc: p.description || local?.desc || "",
+                price: p.price || local?.price || "₹78,000",
+                priceNum: p.priceNum || local?.priceNum || 78000,
+                dimensions: p.dimensions || local?.dimensions || "W 84 × D 38 × H 30 in",
+                configs: p.configurations || local?.configs || ["2 Seater", "3 Seater"],
+                fabrics: p.fabrics || local?.fabrics || ["Linen", "Bouclé"],
+                colors: p.colors || local?.colors || ["Ivory", "Sand"],
+                defaultImages: sanityImgs.length > 0 ? sanityImgs : local?.defaultImages || [],
+              };
+            }
+          );
+          setProductsList(mapped);
+        }
+      } catch (err) {
+        console.warn("Using fallback local products:", err);
+      }
+    }
+    loadCmsProducts();
+  }, []);
+
   // Extract all unique configurations and fabrics across products
   const allConfigs = useMemo(() => {
     const set = new Set<string>();
-    PRODUCTS.forEach((p) => p.configs.forEach((c) => set.add(c)));
+    productsList.forEach((p) => p.configs.forEach((c) => set.add(c)));
     return ["All", ...Array.from(set)];
-  }, []);
+  }, [productsList]);
 
   const allFabrics = useMemo(() => {
     const set = new Set<string>();
-    PRODUCTS.forEach((p) => p.fabrics.forEach((f) => set.add(f)));
+    productsList.forEach((p) => p.fabrics.forEach((f) => set.add(f)));
     return ["All", ...Array.from(set)];
-  }, []);
+  }, [productsList]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return productsList.filter((product) => {
       // Search query
       if (
         searchQuery &&

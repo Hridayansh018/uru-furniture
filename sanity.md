@@ -14,14 +14,15 @@ This guide provides the complete end-to-end instructions for configuring Sanity 
 2. [Step 2: Content Schema & Documents to Create](#step-2-content-schema--documents-to-create)
    - [2.1 Document Type: `product`](#21-document-type-product)
    - [2.2 Required Fields Breakdown](#22-required-fields-breakdown)
-   - [2.3 Ready-to-Use Sample Product Data](#23-ready-to-use-sample-product-data)
+   - [2.3 Image Ordering & Visual Photography Sequence](#23-image-ordering--visual-photography-sequence)
+   - [2.4 All 6 Product Slugs & Catalog Specifications](#24-all-6-product-slugs--catalog-specifications)
 3. [Step 3: Where and How to Implement in the Codebase](#step-3-where-and-how-to-implement-in-the-codebase)
    - [3.1 Environment Variables Setup (`.env.local`)](#31-environment-variables-setup-envlocal)
    - [3.2 Existing Architecture in this Repository](#32-existing-architecture-in-this-repository)
    - [3.3 Connecting Sanity to Products Pages](#33-connecting-sanity-to-products-pages)
    - [3.4 Image Handling (`next/image` + Sanity CDN)](#34-image-handling-nextimage--sanity-cdn)
 4. [Step 4: Verification, Testing & Troubleshooting](#step-4-verification-testing--troubleshooting)
-   - [4.1 Test via In-App Diagnostic Studio](#41-test-via-in-app-diagnostic-studio)
+   - [4.1 Accessing the Studio to Create & Edit Products](#41-accessing-the-studio-to-create--edit-products)
    - [4.2 Test via API Health Route](#42-test-via-api-health-route)
    - [4.3 Common Issues & Fixes](#43-common-issues--fixes)
 
@@ -85,34 +86,155 @@ When logging into Sanity Studio (or creating documents via Sanity CLI / Vision p
 | `mainImage` | Image (Hotspot) | **Yes** | Primary hero photo shown in catalog card & top of gallery |
 | `gallery` | Array of Images | No | Detail photos, side profiles, room setting shots |
 
-### 2.3 Ready-to-Use Sample Product Data
+### 2.3 Image Ordering & Visual Photography Sequence
 
-You can manually input these in Sanity Studio to populate the initial catalog:
+In URU Furniture's product carousel, images are displayed in a deliberate, luxury visual hierarchy. 
 
-#### Product 1: The Kyoto Curved Sofa
-- **Name**: `The Kyoto Curved Sofa`
-- **Slug**: `kyoto-curved-sofa`
-- **Subtitle**: `Organic silhouette inspired by Japandi minimalism`
-- **Description**: `Sculptural curves meet deep relaxation. Crafted with FSC-certified kiln-dried hardwood and layered high-resilience foam wrapped in natural fiber.`
-- **Price**: `₹78,000`
+#### Recommended Image Upload Order:
+1. **Slot 1 (`mainImage` field)**: **Front Architectural View** (Straight-on centered photo, hero image used on homepage and catalog cards).
+2. **Slot 2 (`gallery` item 1)**: **3/4 Perspective Lounge Profile** (Shows depth, armrest shape, and cushion fullness).
+3. **Slot 3 (`gallery` item 2)**: **Left Elevation / Side Angle** (Highlights the side profile, base elevation, and silhouette).
+4. **Slot 4 (`gallery` item 3)**: **Right Elevation / Back Angle** (Shows modular contours and how the sofa sits against open space).
+5. **Slot 5 (`gallery` item 4)**: **Top-Down / Overhead Angle** (Demonstrates deep seating proportions and layout).
+6. **Slot 6 (`gallery` item 5)**: **Tactile Texture & Stitching Close-up** (Macro shot of bouclé/linen weave, piping, and seams).
+7. **Slot 7 (`gallery` item 6)**: **Living Room Ambient Context** (Styled interior environment showing scale with coffee tables and rugs).
+
+> **Tip for Sanity Studio**: 
+> - Upload the primary hero image into the **Main / Hero Image** field.
+> - Upload the remaining angles into the **Gallery Images** array.
+> - You can easily drag and drop items inside the **Gallery Images** list in Sanity Studio to change their display sequence on the website at any time.
+
+---
+
+### 2.4 All 6 Product Slugs & Catalog Specifications
+
+Here are all 6 models currently featured across the website. Use these exact slugs and details when creating documents in Sanity Studio:
+
+---
+
+#### 1. Cloud 01
+- **Product Name**: `Cloud 01`
+- **Slug**: `cloud-01`
+- **Subtitle**: `Quietly iconic.`
+- **Description**: `A deep, relaxed silhouette with generous cushioning and a soft architectural profile. Designed as the anchor of the living room, blending casual comfort with precise tailoring.`
+- **Display Price**: `₹78,000`
 - **Numeric Price**: `78000`
-- **Dimensions**: `W 88 × D 40 × H 31 in`
-- **Configurations**: `["3-Seater", "4-Seater", "Curved Sectional"]`
-- **Fabrics**: `["Bouclé", "Linen Blend", "Textured Chenille"]`
-- **Colors**: `["Ivory", "Sand", "Olive", "Charcoal"]`
-- **Main Image**: Upload a high-resolution sofa hero image.
+- **Dimensions**: `W 84 × D 38 × H 30 in`
+- **Configurations**: `2 Seater`, `3 Seater`, `L-Shape`, `Chaise`
+- **Fabrics**: `Linen`, `Bouclé`, `Micro-suede`, `Performance`
+- **Colours**: `Ivory`, `Sand`, `Olive`, `Charcoal`
+- **Recommended Image Sequence**:
+  - `mainImage`: Front straight-on view (Hero)
+  - `gallery[0]`: 3/4 lounge profile
+  - `gallery[1]`: Left side elevation
+  - `gallery[2]`: Right profile & contour
+  - `gallery[3]`: Overhead seating depth
+  - `gallery[4]`: Close-up tactile weave & stitch detail
 
-#### Product 2: The Solstice Chaise Sectional
-- **Name**: `The Solstice Chaise Sectional`
-- **Slug**: `solstice-chaise-sectional`
-- **Subtitle**: `Low-slung profile with floating plinth base`
-- **Description**: `Architectural elegance designed for spacious open living rooms. Features an extended chaise lounge and feather-blend back cushions.`
-- **Price**: `₹98,000`
+---
+
+#### 2. Cloud 02
+- **Product Name**: `Cloud 02`
+- **Slug**: `cloud-02`
+- **Subtitle**: `Clean and elevated.`
+- **Description**: `A cleaner, slightly raised interpretation of the Cloud family, designed for modern apartments and open-plan rooms. Offers breathable proportions without compromising on sink-in comfort.`
+- **Display Price**: `₹82,000`
+- **Numeric Price**: `82000`
+- **Dimensions**: `W 82 × D 36 × H 30 in`
+- **Configurations**: `2 Seater`, `3 Seater`, `3+1`, `Corner`
+- **Fabrics**: `Linen`, `Cotton Blend`, `Bouclé`, `Performance`
+- **Colours**: `Cream`, `Taupe`, `Rust`, `Forest`
+- **Recommended Image Sequence**:
+  - `mainImage`: Front elevated profile (Hero)
+  - `gallery[0]`: 3/4 apartment perspective
+  - `gallery[1]`: Left side profile
+  - `gallery[2]`: Right corner perspective
+  - `gallery[3]`: Top-down cushion layout
+  - `gallery[4]`: Linen texture macro detail
+
+---
+
+#### 3. Cloud 03
+- **Product Name**: `Cloud 03`
+- **Slug**: `cloud-03`
+- **Subtitle**: `Low, relaxed lounge.`
+- **Description**: `Low, lounge-like seating with rounded edges for a softer, more conversational living room. The seamless cushions invite lounging across any angle.`
+- **Display Price**: `₹86,000`
+- **Numeric Price**: `86000`
+- **Dimensions**: `W 86 × D 39 × H 29 in`
+- **Configurations**: `2 Seater`, `3 Seater`, `Chaise`, `U-Shape`
+- **Fabrics**: `Bouclé`, `Velvet`, `Linen`, `Performance`
+- **Colours**: `Oat`, `Camel`, `Wine`, `Deep Green`
+- **Recommended Image Sequence**:
+  - `mainImage`: Front low-slung lounge view (Hero)
+  - `gallery[0]`: Relaxed chaise lounge angle
+  - `gallery[1]`: Left rounded contour
+  - `gallery[2]`: Right profile
+  - `gallery[3]`: Overhead expansive depth
+  - `gallery[4]`: Velvet / bouclé tactile detail
+
+---
+
+#### 4. Cloud 04
+- **Product Name**: `Cloud 04`
+- **Slug**: `cloud-04`
+- **Subtitle**: `Compact consideration.`
+- **Description**: `A compact Cloud silhouette with a refined arm profile — ideal when comfort matters but floor space is limited. Perfect for stylish urban apartments.`
+- **Display Price**: `₹74,000`
+- **Numeric Price**: `74000`
+- **Dimensions**: `W 78 × D 35 × H 30 in`
+- **Configurations**: `2 Seater`, `2.5 Seater`, `3 Seater`
+- **Fabrics**: `Linen`, `Cotton Blend`, `Micro-suede`
+- **Colours**: `Pearl`, `Beige`, `Terracotta`, `Grey`
+- **Recommended Image Sequence**:
+  - `mainImage`: Compact architectural front view (Hero)
+  - `gallery[0]`: 3/4 perspective in compact room
+  - `gallery[1]`: Left slim armrest profile
+  - `gallery[2]`: Right side elevation
+  - `gallery[3]`: Overhead proportions
+  - `gallery[4]`: Tailored seam & fabric close-up
+
+---
+
+#### 5. Cloud 05
+- **Product Name**: `Cloud 05`
+- **Slug**: `cloud-05`
+- **Subtitle**: `Generous modularity.`
+- **Description**: `A generous modular design for larger rooms, built around flexibility and relaxed everyday comfort. Rearrange sections effortlessly as entertaining needs change.`
+- **Display Price**: `₹94,000`
+- **Numeric Price**: `94000`
+- **Dimensions**: `W 96 × D 40 × H 30 in`
+- **Configurations**: `3 Seater`, `L-Shape`, `Large Sectional`, `U-Shape`
+- **Fabrics**: `Linen`, `Bouclé`, `Performance`, `Chenille`
+- **Colours**: `Sand`, `Stone`, `Olive`, `Navy`
+- **Recommended Image Sequence**:
+  - `mainImage`: Wide modular sectional front view (Hero)
+  - `gallery[0]`: L-shape perspective angle
+  - `gallery[1]`: Left sectional module
+  - `gallery[2]`: Right chaise extension
+  - `gallery[3]`: Top-down modular arrangement
+  - `gallery[4]`: Chenille / bouclé cushion close-up
+
+---
+
+#### 6. Cloud 06
+- **Product Name**: `Cloud 06`
+- **Slug**: `cloud-06`
+- **Subtitle**: `Sculptural anchor.`
+- **Description**: `The most sculptural member of the collection — rounded, grounded and designed to anchor a room. Bold curved backrests with artisanal hand-stitched detailing.`
+- **Display Price**: `₹98,000`
 - **Numeric Price**: `98000`
-- **Dimensions**: `W 112 × D 65 × H 30 in`
-- **Configurations**: `["Left Chaise", "Right Chaise", "4-Seater"]`
-- **Fabrics**: `["Heavy Linen", "Brushed Cotton", "Velvet"]`
-- **Colors**: `["Taupe", "Oat", "Rust", "Forest"]`
+- **Dimensions**: `W 88 × D 39 × H 31 in`
+- **Configurations**: `2 Seater`, `3 Seater`, `Chaise`, `Corner`
+- **Fabrics**: `Bouclé`, `Velvet`, `Micro-suede`, `Performance`
+- **Colours**: `Ivory`, `Mocha`, `Brick`, `Black`
+- **Recommended Image Sequence**:
+  - `mainImage`: Sculptural curved front silhouette (Hero)
+  - `gallery[0]`: 3/4 organic curve perspective
+  - `gallery[1]`: Left curved sweep profile
+  - `gallery[2]`: Right contoured view
+  - `gallery[3]`: Overhead sculptural curvature
+  - `gallery[4]`: Artisanal hand-stitched piping detail
 
 ---
 

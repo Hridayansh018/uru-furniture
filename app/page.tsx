@@ -143,12 +143,13 @@ export default function HomePage() {
                 configs: p.configurations || local?.configs || ["2 Seater", "3 Seater"],
                 fabrics: p.fabrics || local?.fabrics || ["Linen", "Bouclé"],
                 colors: p.colors || local?.colors || ["Ivory", "Sand"],
-                defaultImages:
-                  p.galleryUrls && p.galleryUrls.length > 0
-                    ? p.galleryUrls
-                    : p.mainImageUrl
-                    ? [p.mainImageUrl]
-                    : local?.defaultImages || [],
+                defaultImages: (() => {
+                  const sanityImgs = [
+                    p.mainImageUrl,
+                    ...(p.galleryUrls || []),
+                  ].filter(Boolean) as string[];
+                  return sanityImgs.length > 0 ? sanityImgs : local?.defaultImages || [];
+                })(),
               };
             }
           );

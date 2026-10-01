@@ -133,9 +133,13 @@ export default function ProductDetailPage({
             configs: data.product.configurations || prev?.configs || [],
             fabrics: data.product.fabrics || prev?.fabrics || [],
             colors: data.product.colors || prev?.colors || [],
-            defaultImages: data.product.galleryUrls?.length
-              ? data.product.galleryUrls
-              : prev?.defaultImages || [],
+            defaultImages: (() => {
+              const sanityImgs = [
+                data.product.mainImageUrl,
+                ...(data.product.galleryUrls || []),
+              ].filter(Boolean);
+              return sanityImgs.length > 0 ? sanityImgs : prev?.defaultImages || [];
+            })(),
           }));
         }
       } catch (err) {
