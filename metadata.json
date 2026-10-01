@@ -1,0 +1,6 @@
+{
+  "name": "URU Furniture",
+  "description": "Designer sofa collections, custom configurations, WhatsApp consultations, and Sanity.io CMS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
