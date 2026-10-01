@@ -37,13 +37,9 @@ export default function Navbar({ cartCount, onOpenCart, onOpenWhatsApp }: Navbar
           <Link href="/#visit" className="hover:text-[#171614] transition-colors">
             Visit Store
           </Link>
-          <Link
-            href="/studio"
-            className="flex items-center gap-1.5 text-xs text-[#716c65] hover:text-[#171614] transition-colors bg-[#ede9e0] px-2.5 py-1 rounded-full"
-            title="Sanity.io Studio"
-          >
-            <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
-            Sanity CMS
+          <Link href="/products" className="hover:text-[#171614] transition-colors font-medium flex items-center gap-1.5">
+            <span>All Sofas</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#ede9e0] text-[#716c65]">6</span>
           </Link>
         </nav>
 
@@ -112,12 +108,12 @@ export default function Navbar({ cartCount, onOpenCart, onOpenWhatsApp }: Navbar
             Visit Store
           </Link>
           <Link
-            href="/studio"
+            href="/products"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 text-sm text-[#716c65] flex items-center gap-2 border-b border-[#ece7dc]"
+            className="py-2.5 text-base font-medium text-[#171614] border-b border-[#ece7dc] flex items-center justify-between"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
-            Sanity CMS Studio
+            <span>All Sofas Collection</span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#211d19] text-white">6 Models</span>
           </Link>
           <button
             type="button"

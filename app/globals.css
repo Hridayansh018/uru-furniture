@@ -1,1 +1,192 @@
 @import "tailwindcss";
+
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Root Design Tokens ───────────────────────────────────────────────────── */
+:root {
+  --uru-cream: #fcfbf9;
+  --uru-stone: #f5f3ef;
+  --uru-border: #e7e5e4;
+  --uru-warm: #1c1917;
+  --uru-muted: #78716c;
+  --uru-mid: #57534e;
+  --uru-gold: #d4a96b;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ── Base Resets ──────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scroll Reveal Animations ─────────────────────────────────────────────── */
+
+/* Base state: items start invisible and shifted down */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.72s var(--ease-out-quart), transform 0.72s var(--ease-out-quart);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--ease-out-quart), transform 0.6s var(--ease-out-quart);
+}
+
+.reveal-stagger.visible > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+.reveal-stagger.visible > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 80ms; }
+.reveal-stagger.visible > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 160ms; }
+.reveal-stagger.visible > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 240ms; }
+.reveal-stagger.visible > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 320ms; }
+.reveal-stagger.visible > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 400ms; }
+
+/* Fade up from left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.7s var(--ease-out-quart), transform 0.7s var(--ease-out-quart);
+}
+
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Fade up from right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.7s var(--ease-out-quart), transform 0.7s var(--ease-out-quart);
+}
+
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale in */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.65s var(--ease-out-quart), transform 0.65s var(--ease-out-quart);
+}
+
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Parallax Helper ──────────────────────────────────────────────────────── */
+.parallax-bg {
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+
+/* ── Hover Lift Effect ────────────────────────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.3s var(--ease-out-quart), box-shadow 0.3s var(--ease-out-quart);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(28, 25, 23, 0.12);
+}
+
+/* ── Shimmer / Skeleton Loading ───────────────────────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f5f3ef 25%, #ede9e0 50%, #f5f3ef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ── Underline Slide Hover ────────────────────────────────────────────────── */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s var(--ease-out-quart);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ── Floating Badge Pulse ─────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+.float-badge {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ── Grain texture overlay ────────────────────────────────────────────────── */
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+/* ── Section Divider Lines ────────────────────────────────────────────────── */
+.section-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--uru-border), transparent);
+  margin: 0 auto;
+}
+
+/* ── Custom scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--uru-stone); }
+::-webkit-scrollbar-thumb { background: #c4bfb8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--uru-muted); }
+
+/* ── Selection colors ─────────────────────────────────────────────────────── */
+::selection {
+  background: var(--uru-warm);
+  color: #ffffff;
+}
+
+/* ── Input focus ring ─────────────────────────────────────────────────────── */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(28, 25, 23, 0.2);
+}

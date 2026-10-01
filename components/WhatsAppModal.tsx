@@ -8,17 +8,19 @@ interface WhatsAppModalProps {
   onClose: () => void;
   productName?: string;
   initialSubject?: string;
+  defaultSubject?: string;
 }
 
 export default function WhatsAppModal({
   isOpen,
   onClose,
   productName,
-  initialSubject
+  initialSubject,
+  defaultSubject
 }: WhatsAppModalProps) {
   if (!isOpen) return null;
 
-  const targetName = productName || initialSubject || "URU Furniture";
+  const targetName = productName || initialSubject || defaultSubject || "URU Furniture";
 
   const topics = [
     {

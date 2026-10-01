@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   MessageSquare,
   ArrowRight,
   Sparkles,
   Calendar,
-  Layers,
   Palette,
   ShieldCheck,
   Check,
@@ -27,6 +26,48 @@ import Footer from "@/components/Footer";
 import WhatsAppModal from "@/components/WhatsAppModal";
 import CartModal, { CartItem } from "@/components/CartModal";
 import CatalogueLightbox from "@/components/CatalogueLightbox";
+
+// ── Scroll Reveal Hook ────────────────────────────────────────────────────────
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    const elements = document.querySelectorAll(
+      ".reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stagger"
+    );
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+}
+
+// ── Parallax Hook ─────────────────────────────────────────────────────────────
+function useParallax(ref: React.RefObject<HTMLElement | null>, speed = 0.3) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
+      const offset = (progress - 0.5) * speed * 100;
+      el.style.transform = `translateY(${offset}px)`;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [ref, speed]);
+}
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
@@ -54,6 +95,14 @@ export default function HomePage() {
   const [lightboxTitle, setLightboxTitle] = useState("");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [cmsSource, setCmsSource] = useState<string | null>(null);
+
+  // Parallax refs
+  const heroImgRef = useRef<HTMLDivElement>(null);
+  const customBgRef = useRef<HTMLDivElement>(null);
+
+  // Activate scroll reveal
+  useScrollReveal();
+  useParallax(heroImgRef, 0.18);
 
   // Fetch Sanity dynamic product data
   useEffect(() => {
@@ -205,29 +254,29 @@ export default function HomePage() {
       />
 
       <main className="flex-1">
-        {/* 1. HERO SECTION: Clean, architectural, quiet luxury */}
+        {/* 1. HERO SECTION */}
         <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden border-b border-[#e7e5e4]">
           <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-6 space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f5f3ef] border border-[#e7e5e4] text-xs font-semibold uppercase tracking-wider text-[#78716c]">
+                <div className="reveal inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f5f3ef] border border-[#e7e5e4] text-xs font-semibold uppercase tracking-wider text-[#78716c]">
                   <span>The Cloud Sofa Collection</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                   <span className="text-[#1c1917]">6 Designer Models</span>
                 </div>
 
-                <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-[1.08]">
+                <h1 className="reveal font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-[1.08]" style={{ transitionDelay: "80ms" }}>
                   Sink into silence. Living spaces redefined.
                 </h1>
 
-                <p className="text-base sm:text-lg text-[#57534e] leading-relaxed max-w-xl font-light">
+                <p className="reveal text-base sm:text-lg text-[#57534e] leading-relaxed max-w-xl font-light" style={{ transitionDelay: "160ms" }}>
                   URU Furniture blends architectural proportions with deep, sink-in cloud cushions and bespoke linen upholstery. Designed for modern living rooms, made to your exact dimensions.
                 </p>
 
-                <div className="flex flex-wrap items-center gap-4 pt-2">
+                <div className="reveal flex flex-wrap items-center gap-4 pt-2" style={{ transitionDelay: "240ms" }}>
                   <a
                     href="#collection"
-                    className="px-7 py-3.5 rounded-full bg-[#1c1917] hover:bg-black text-white text-sm font-semibold tracking-wide uppercase transition-all shadow-md flex items-center gap-2 group"
+                    className="px-7 py-3.5 rounded-full bg-[#1c1917] hover:bg-black text-white text-sm font-semibold tracking-wide uppercase transition-all shadow-md flex items-center gap-2 group hover-lift"
                   >
                     <span>Explore Collection</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -239,7 +288,7 @@ export default function HomePage() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-6 py-3.5 rounded-full bg-[#1b4332] hover:bg-[#143225] text-white text-sm font-semibold tracking-wide transition-all shadow-md flex items-center gap-2"
+                    className="px-6 py-3.5 rounded-full bg-[#1b4332] hover:bg-[#143225] text-white text-sm font-semibold tracking-wide transition-all shadow-md flex items-center gap-2 hover-lift"
                   >
                     <MessageSquare className="w-4 h-4 text-emerald-300" />
                     <span>WhatsApp Inquiry</span>
@@ -247,7 +296,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Quick Trust Highlights */}
-                <div className="pt-6 grid grid-cols-3 gap-4 border-t border-[#e7e5e4] text-xs text-[#78716c]">
+                <div className="reveal-stagger pt-6 grid grid-cols-3 gap-4 border-t border-[#e7e5e4] text-xs text-[#78716c]" style={{ transitionDelay: "300ms" }}>
                   <div>
                     <span className="font-serif text-xl sm:text-2xl text-[#1c1917] block font-semibold">10 Yrs</span>
                     <span>Hardwood Frame</span>
@@ -263,30 +312,70 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Hero Image Showcase */}
-              <div className="lg:col-span-6 relative">
-                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-neutral-100 border border-[#e7e5e4]">
-                  <img
-                    src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1400&q=85"
-                    alt="URU Cloud 01 Sofa in minimalist living room"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              {/* Hero Image Showcase with Dynamic Model Switcher */}
+              <div className="lg:col-span-6 space-y-3 reveal-scale" style={{ transitionDelay: "120ms" }}>
+                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-neutral-100 border border-[#e7e5e4] group">
+                  <div ref={heroImgRef} className="absolute inset-0">
+                    <img
+                      src={selectedProduct.defaultImages[0]}
+                      alt={`URU ${selectedProduct.name} in architectural room setting`}
+                      className="w-full h-full object-cover transition-all duration-700 ease-out"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
                   
                   {/* Floating model tag */}
-                  <div className="absolute bottom-5 left-5 right-5 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-white/40 shadow-lg flex items-center justify-between">
+                  <div className="absolute bottom-5 left-5 right-5 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-white/40 shadow-lg flex items-center justify-between float-badge">
                     <div>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-[#78716c] block">
-                        Featured Piece
-                      </span>
-                      <h2 className="font-serif text-lg text-[#1c1917] font-medium">Cloud 01 — 3 Seater in Sand Linen</h2>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#78716c] block">
+                          Featured Model
+                        </span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
+                          {selectedProduct.price}
+                        </span>
+                      </div>
+                      <h2 className="font-serif text-lg text-[#1c1917] font-medium">
+                        {selectedProduct.name} — {selectedProduct.subtitle}
+                      </h2>
                     </div>
                     <Link
-                      href="/products/cloud-01"
-                      className="px-4 py-2 rounded-full bg-[#1c1917] text-white text-xs font-semibold hover:bg-black transition-colors"
+                      href={`/products/${selectedProduct.id}`}
+                      className="px-4 py-2 rounded-full bg-[#1c1917] text-white text-xs font-semibold hover:bg-black transition-colors shrink-0"
                     >
-                      View Model →
+                      Inspect →
                     </Link>
+                  </div>
+                </div>
+
+                {/* Hero Interactive Model Switcher Pills */}
+                <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pt-1">
+                  <span className="text-[11px] font-mono text-[#78716c] uppercase shrink-0 font-medium hidden sm:inline">
+                    Preview:
+                  </span>
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                    {products.map((p) => {
+                      const isHeroActive = selectedProduct.id === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedProduct(p);
+                            setActiveConfig(p.configs[0]);
+                            setActiveFabric(p.fabrics[0]);
+                            setActiveColor(p.colors[0]);
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs font-medium transition-all shrink-0 cursor-pointer ${
+                            isHeroActive
+                              ? "bg-[#1c1917] text-white shadow-sm font-semibold scale-105"
+                              : "bg-[#f5f3ef] text-[#57534e] hover:bg-[#eae5dc] border border-[#e7e5e4]"
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -294,9 +383,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 2. CLOUD SOFA COLLECTION SECTION (Primary Section per Brief) */}
+        {/* 2. CLOUD SOFA COLLECTION SECTION */}
         <section id="collection" className="py-20 md:py-28 max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#e7e5e4]">
+          <div className="reveal flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[#e7e5e4]">
             <div className="space-y-2 max-w-2xl">
               <div className="flex items-center gap-2">
                 <span className="text-xs uppercase tracking-widest text-[#78716c] font-semibold">
@@ -317,7 +406,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Filter Tabs */}
+            {/* Filter Tabs & Catalog Link */}
             <div className="flex items-center gap-2 flex-wrap">
               {[
                 { id: "all", label: "All 6 Models" },
@@ -329,7 +418,7 @@ export default function HomePage() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveFilter(tab.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     activeFilter === tab.id
                       ? "bg-[#1c1917] text-white shadow-sm"
                       : "bg-[#f5f3ef] text-[#78716c] hover:text-[#1c1917] border border-[#e7e5e4]"
@@ -338,28 +427,39 @@ export default function HomePage() {
                   {tab.label}
                 </button>
               ))}
+
+              <Link
+                href="/products"
+                className="px-4 py-2 rounded-full bg-white hover:bg-[#1c1917] text-[#1c1917] hover:text-white border border-[#d6d3d1] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-2xs"
+              >
+                <span>Full Catalog</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
 
           {/* 6 Models Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-12">
+          <div className="reveal-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-12">
             {filteredProducts.map((p) => {
               const whatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                `Hi, I’m interested in the Cloud Sofa - ${p.name}. Could you share more details?`
+                `Hi, I'm interested in the Cloud Sofa - ${p.name}. Could you share more details?`
               )}`;
 
               return (
                 <div
                   key={p.id}
-                  className="group bg-white rounded-3xl border border-[#e7e5e4] overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                  className="group bg-white rounded-3xl border border-[#e7e5e4] overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover-lift"
                 >
-                  <div>
+                  <Link
+                    href={`/products/${p.id}`}
+                    className="block flex-1 focus:outline-none group/card cursor-pointer"
+                  >
                     {/* Image Container with Hover zoom */}
                     <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden">
                       <img
                         src={p.defaultImages[0]}
                         alt={p.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                       <div className="absolute top-3 left-3 bg-[#1c1917]/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium">
                         {p.name}
@@ -370,8 +470,12 @@ export default function HomePage() {
 
                       <button
                         type="button"
-                        onClick={() => handleOpenLightbox(p.defaultImages, p.name)}
-                        className="absolute bottom-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-[#1c1917] shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleOpenLightbox(p.defaultImages, p.name);
+                        }}
+                        className="absolute bottom-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-[#1c1917] shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
                         title="Quick View Gallery"
                       >
                         <Eye className="w-4 h-4" />
@@ -381,9 +485,12 @@ export default function HomePage() {
                     {/* Content */}
                     <div className="p-6 space-y-4">
                       <div>
-                        <h3 className="font-serif text-2xl text-[#1c1917] group-hover:text-[#9a3412] transition-colors">
-                          {p.name}
-                        </h3>
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-serif text-2xl text-[#1c1917] group-hover:text-[#9a3412] transition-colors flex items-center gap-1.5">
+                            <span>{p.name}</span>
+                            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#9a3412]" />
+                          </h3>
+                        </div>
                         <p className="text-xs text-[#78716c] italic mt-0.5">&ldquo;{p.subtitle}&rdquo;</p>
                       </div>
 
@@ -411,38 +518,30 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
 
-                  {/* Actions: View Product & WhatsApp CTA per Brief */}
+                  {/* Actions */}
                   <div className="p-6 pt-0 space-y-2.5">
                     <a
                       href={whatsAppUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full py-3 px-4 rounded-2xl bg-[#1b4332] hover:bg-[#143225] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                      className="w-full py-3 px-4 rounded-2xl bg-[#1b4332] hover:bg-[#143225] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm cursor-pointer"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <MessageSquare className="w-4 h-4 text-emerald-300" />
                       <span>WhatsApp Inquiry — {p.name}</span>
                     </a>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        href={`/products/${p.id}`}
-                        className="py-2.5 px-3 rounded-xl border border-[#d6d3d1] hover:border-[#1c1917] text-center text-xs font-medium text-[#1c1917] transition-colors"
-                      >
-                        Full Product Page →
-                      </Link>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleOpenWhatsApp(`${p.name}: Different sizes & fabric options`)
-                        }
-                        className="py-2.5 px-3 rounded-xl bg-[#f5f3ef] hover:bg-[#e7e5e4] text-center text-xs font-medium text-[#57534e] transition-colors"
-                      >
-                        Quick Specs
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleOpenWhatsApp(`${p.name}: Different sizes & fabric options`)
+                      }
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#f5f3ef] hover:bg-[#e7e5e4] text-center text-xs font-medium text-[#57534e] transition-colors cursor-pointer"
+                    >
+                      Quick Consultation & Fabric Swatches
+                    </button>
                   </div>
                 </div>
               );
@@ -450,30 +549,39 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 3. DEDICATED CUSTOM SOFA SECTION (Mandated in Brief) */}
-        <section id="custom" className="py-20 md:py-28 bg-[#f5f3ef] border-y border-[#e7e5e4]">
-          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        {/* 3. DEDICATED CUSTOM SOFA SECTION */}
+        <section id="custom" className="py-20 md:py-28 bg-[#f5f3ef] border-y border-[#e7e5e4] relative overflow-hidden">
+          {/* Subtle background parallax element */}
+          <div ref={customBgRef} className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231c1917' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
+
+          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
               <div className="lg:col-span-6 space-y-5">
-                <span className="text-xs uppercase tracking-widest text-[#78716c] font-semibold">
-                  Bespoke Craftsmanship
-                </span>
-                <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1c1917] tracking-tight">
-                  Design Your Sofa Made to Your Requirements
-                </h2>
-                <p className="text-sm sm:text-base text-[#57534e] leading-relaxed font-light">
-                  Have a challenging floor plan, specific cushion softness requirement, or custom architectural fabric in mind? Our bespoke studio builds custom sofas tailored precisely to your living room dimensions.
-                </p>
+                <div className="reveal-left">
+                  <span className="text-xs uppercase tracking-widest text-[#78716c] font-semibold">
+                    Bespoke Craftsmanship
+                  </span>
+                  <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1c1917] tracking-tight mt-2">
+                    Design Your Sofa Made to Your Requirements
+                  </h2>
+                  <p className="text-sm sm:text-base text-[#57534e] leading-relaxed font-light mt-4">
+                    Have a challenging floor plan, specific cushion softness requirement, or custom architectural fabric in mind? Our bespoke studio builds custom sofas tailored precisely to your living room dimensions.
+                  </p>
+                </div>
 
-                {/* Primary CTA per Brief: "Design Your Sofa" -> WhatsApp */}
-                <div className="pt-2">
+                {/* Primary CTA */}
+                <div className="pt-2 reveal-left" style={{ transitionDelay: "100ms" }}>
                   <a
                     href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
                       "Hi URU Furniture, I would like to Design My Custom Sofa. I have specific room dimensions and fabric preferences."
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#1b4332] hover:bg-[#143225] text-white font-semibold text-sm tracking-wide uppercase transition-all shadow-md group"
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#1b4332] hover:bg-[#143225] text-white font-semibold text-sm tracking-wide uppercase transition-all shadow-md group hover-lift"
                   >
                     <MessageSquare className="w-5 h-5 text-emerald-300" />
                     <span>Design Your Sofa on WhatsApp</span>
@@ -482,8 +590,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* 4-Step Process Explanation per Brief */}
-              <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* 4-Step Process */}
+              <div className="lg:col-span-6 reveal-stagger grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   {
                     step: "01",
@@ -508,7 +616,7 @@ export default function HomePage() {
                 ].map((item) => (
                   <div
                     key={item.step}
-                    className="p-6 rounded-2xl bg-white border border-[#e7e5e4] shadow-sm space-y-2"
+                    className="p-6 rounded-2xl bg-white border border-[#e7e5e4] shadow-sm space-y-2 hover-lift"
                   >
                     <span className="font-mono text-xs font-bold text-[#b45309] block">
                       Step {item.step}
@@ -520,9 +628,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Inspiration Gallery & Previous Custom Projects */}
+            {/* Inspiration Gallery */}
             <div className="space-y-6 pt-6">
-              <div className="flex items-end justify-between">
+              <div className="reveal flex items-end justify-between">
                 <div>
                   <span className="text-xs uppercase tracking-widest text-[#78716c] font-semibold">
                     Inspiration Gallery
@@ -543,7 +651,7 @@ export default function HomePage() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="reveal-stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   {
                     title: "The Penthouse L-Sectional",
@@ -568,13 +676,13 @@ export default function HomePage() {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="group bg-white rounded-2xl overflow-hidden border border-[#e7e5e4] shadow-sm hover:shadow-md transition-all"
+                    className="group bg-white rounded-2xl overflow-hidden border border-[#e7e5e4] shadow-sm hover:shadow-md transition-all hover-lift"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                       <img
                         src={item.img}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     </div>
                     <div className="p-4 space-y-1">
@@ -588,9 +696,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 4. PRICING & PROJECT SPECIFICATION BREAKDOWN (Per User Brief Checklist) */}
+        {/* 4. PRICING & PROJECT SPECIFICATION BREAKDOWN */}
         <section className="py-20 max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="reveal text-center max-w-2xl mx-auto space-y-3">
             <span className="text-xs uppercase tracking-widest text-[#78716c] font-semibold">
               Project Transparency
             </span>
@@ -602,9 +710,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* 1. Cost with AI-generated lifestyle images/renders */}
-            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3">
+          <div className="reveal-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3 hover-lift">
               <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center font-bold text-sm">
                 01
               </div>
@@ -620,8 +727,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 2. Cost without AI-generated images */}
-            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3">
+            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3 hover-lift">
               <div className="w-10 h-10 rounded-2xl bg-stone-100 text-stone-800 flex items-center justify-center font-bold text-sm">
                 02
               </div>
@@ -637,8 +743,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 3. Cost with & without WhatsApp automation */}
-            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3">
+            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3 hover-lift">
               <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-sm">
                 03
               </div>
@@ -654,8 +759,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 4. Timeline upon confirmation */}
-            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3">
+            <div className="p-6 rounded-3xl bg-white border border-[#e7e5e4] shadow-sm space-y-3 hover-lift">
               <div className="w-10 h-10 rounded-2xl bg-neutral-900 text-white flex items-center justify-center font-bold text-sm">
                 04
               </div>
@@ -673,22 +777,32 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 5. STORE VISIT & EXPERIENCE CENTRE (Mandated in Brief) */}
-        <section id="visit" className="py-20 bg-[#1c1917] text-white">
-          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 5. STORE VISIT & EXPERIENCE CENTRE */}
+        <section id="visit" className="py-20 bg-[#1c1917] text-white relative overflow-hidden">
+          {/* Subtle background texture */}
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage: `repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 1px, transparent 1px, transparent 50%)`,
+              backgroundSize: "30px 30px",
+            }}
+          />
+
+          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-6 space-y-6">
-                <span className="text-xs uppercase tracking-widest text-[#a8a29e] font-semibold">
-                  Touch & Feel
-                </span>
-                <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white tracking-tight">
-                  Experience The Cloud Cushion In Person
-                </h2>
-                <p className="text-sm sm:text-base text-[#a8a29e] leading-relaxed font-light">
-                  Nothing compares to sinking into the Cloud Sofa yourself. Visit our tactile Bangalore design studio to test foam densities, browse our physical textile book, and consult with our design architects.
-                </p>
+                <div className="reveal-left">
+                  <span className="text-xs uppercase tracking-widest text-[#a8a29e] font-semibold">
+                    Touch & Feel
+                  </span>
+                  <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white tracking-tight mt-2">
+                    Experience The Cloud Cushion In Person
+                  </h2>
+                  <p className="text-sm sm:text-base text-[#a8a29e] leading-relaxed font-light mt-4">
+                    Nothing compares to sinking into the Cloud Sofa yourself. Visit our tactile Bangalore design studio to test foam densities, browse our physical textile book, and consult with our design architects.
+                  </p>
+                </div>
 
-                <div className="space-y-4 pt-2 text-xs text-[#d6d3d1]">
+                <div className="reveal-left space-y-4 pt-2 text-xs text-[#d6d3d1]" style={{ transitionDelay: "80ms" }}>
                   <div className="flex items-start gap-3">
                     <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <div>
@@ -707,86 +821,88 @@ export default function HomePage() {
               </div>
 
               {/* Booking Form */}
-              <div className="lg:col-span-6 bg-[#292524] p-8 rounded-3xl border border-[#44403c] shadow-2xl">
-                <h3 className="font-serif text-2xl text-white mb-2">Book a Studio Appointment</h3>
-                <p className="text-xs text-[#a8a29e] mb-6">
-                  Reserve private time with our sofa designers and have fabric samples ready for your visit.
-                </p>
+              <div className="lg:col-span-6 reveal-right">
+                <div className="bg-[#292524] p-8 rounded-3xl border border-[#44403c] shadow-2xl">
+                  <h3 className="font-serif text-2xl text-white mb-2">Book a Studio Appointment</h3>
+                  <p className="text-xs text-[#a8a29e] mb-6">
+                    Reserve private time with our sofa designers and have fabric samples ready for your visit.
+                  </p>
 
-                {visitBooked ? (
-                  <div className="p-6 rounded-2xl bg-[#1b4332] text-white space-y-2">
-                    <div className="flex items-center gap-2 font-semibold">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-300" />
-                      <span>WhatsApp Consultation Initiated!</span>
+                  {visitBooked ? (
+                    <div className="p-6 rounded-2xl bg-[#1b4332] text-white space-y-2">
+                      <div className="flex items-center gap-2 font-semibold">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-300" />
+                        <span>WhatsApp Consultation Initiated!</span>
+                      </div>
+                      <p className="text-xs text-emerald-100">
+                        Our studio team has received your appointment request and will confirm your slot shortly on WhatsApp.
+                      </p>
                     </div>
-                    <p className="text-xs text-emerald-100">
-                      Our studio team has received your appointment request and will confirm your slot shortly on WhatsApp.
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleBookVisitSubmit} className="space-y-4">
-                    <div>
-                      <label className="text-xs text-[#d6d3d1] block mb-1">Your Full Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={visitName}
-                        onChange={(e) => setVisitName(e.target.value)}
-                        placeholder="e.g. Hridayansh"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
+                  ) : (
+                    <form onSubmit={handleBookVisitSubmit} className="space-y-4">
                       <div>
-                        <label className="text-xs text-[#d6d3d1] block mb-1">Preferred Date</label>
+                        <label className="text-xs text-[#d6d3d1] block mb-1">Your Full Name</label>
                         <input
-                          type="date"
-                          value={visitDate}
-                          onChange={(e) => setVisitDate(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400"
+                          type="text"
+                          required
+                          value={visitName}
+                          onChange={(e) => setVisitName(e.target.value)}
+                          placeholder="e.g. Hridayansh"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400 transition-colors"
                         />
                       </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-[#d6d3d1] block mb-1">Preferred Date</label>
+                          <input
+                            type="date"
+                            value={visitDate}
+                            onChange={(e) => setVisitDate(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400 transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-[#d6d3d1] block mb-1">Preferred Time</label>
+                          <select
+                            value={visitTime}
+                            onChange={(e) => setVisitTime(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400 transition-colors"
+                          >
+                            <option>11:00 AM</option>
+                            <option>02:00 PM</option>
+                            <option>04:30 PM</option>
+                            <option>06:30 PM</option>
+                          </select>
+                        </div>
+                      </div>
+
                       <div>
-                        <label className="text-xs text-[#d6d3d1] block mb-1">Preferred Time</label>
+                        <label className="text-xs text-[#d6d3d1] block mb-1">Sofa Model of Interest</label>
                         <select
-                          value={visitTime}
-                          onChange={(e) => setVisitTime(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400"
+                          value={visitModel}
+                          onChange={(e) => setVisitModel(e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400 transition-colors"
                         >
-                          <option>11:00 AM</option>
-                          <option>02:00 PM</option>
-                          <option>04:30 PM</option>
-                          <option>06:30 PM</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.name}>
+                              {p.name} ({p.price})
+                            </option>
+                          ))}
+                          <option value="Custom Sofa Project">Custom Bespoke Sofa Project</option>
                         </select>
                       </div>
-                    </div>
 
-                    <div>
-                      <label className="text-xs text-[#d6d3d1] block mb-1">Sofa Model of Interest</label>
-                      <select
-                        value={visitModel}
-                        onChange={(e) => setVisitModel(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#1c1917] border border-[#57534e] text-white text-xs focus:outline-none focus:border-amber-400"
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 px-6 rounded-full bg-[#1b4332] hover:bg-[#143225] text-white font-semibold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all shadow-md hover-lift"
                       >
-                        {products.map((p) => (
-                          <option key={p.id} value={p.name}>
-                            {p.name} ({p.price})
-                          </option>
-                        ))}
-                        <option value="Custom Sofa Project">Custom Bespoke Sofa Project</option>
-                      </select>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 px-6 rounded-full bg-[#1b4332] hover:bg-[#143225] text-white font-semibold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all shadow-md"
-                    >
-                      <Calendar className="w-4 h-4 text-emerald-300" />
-                      <span>Confirm Studio Appointment via WhatsApp</span>
-                    </button>
-                  </form>
-                )}
+                        <Calendar className="w-4 h-4 text-emerald-300" />
+                        <span>Confirm Studio Appointment via WhatsApp</span>
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
             </div>
           </div>

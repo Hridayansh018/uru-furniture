@@ -1,8 +1,4 @@
-// Helper functions matching Sanity's defineField and defineType
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const defineType = (schema: any) => schema;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const defineField = (field: any) => field;
+import { defineField, defineType } from "sanity";
 
 export const productType = defineType({
   name: "product",

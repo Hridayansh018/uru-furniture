@@ -1,6 +1,6 @@
 # URU Furniture
 
-A clean, architectural website for URU Furniture that showcases designer sofa collections, drives automated WhatsApp consultations, facilitates studio experience centre visit bookings, and provides dynamic content and high-resolution asset management powered natively by **Sanity.io Headless CMS**.
+A clean, architectural website for URU Furniture that showcases designer sofa collections, drives automated WhatsApp consultations, facilitates studio experience centre visit bookings, provides dynamic content powered by **Sanity.io Headless CMS**, and sends transactional emails via **Nodemailer SMTP**.
 
 ---
 
@@ -137,16 +137,92 @@ You can populate your Sanity dataset with all 6 URU Cloud Sofa models (`cloud-01
 
 ---
 
+## Contact Form & Nodemailer SMTP Setup
+
+URU Furniture includes a full contact page at `/contact` that sends two emails on each form submission:
+
+1. **Customer Confirmation** — A premium branded email thanking the visitor and letting them know the team will be in touch.
+2. **Admin Lead Alert** — A detailed lead notification sent to your admin email with all form details, a WhatsApp reply button, and a direct email reply link.
+
+### How it works
+
+- The contact form (`/contact`) submits to the **`POST /api/contact`** route.
+- The API route uses **Nodemailer** to send emails via any SMTP server (Gmail recommended).
+- Both emails use responsive, branded HTML templates.
+
+### Gmail SMTP Setup (Recommended)
+
+Gmail is the easiest SMTP provider and requires zero paid plans.
+
+**Step 1: Enable 2-Step Verification**
+1. Go to [myaccount.google.com/security](https://myaccount.google.com/security)
+2. Under "How you sign in to Google", click **2-Step Verification** and enable it.
+
+**Step 2: Generate an App Password**
+1. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+2. Select **App**: `Mail` and **Device**: `Other (Custom name)` → type `URU Furniture`
+3. Click **Generate** — copy the 16-character password that appears (e.g., `xxxx xxxx xxxx xxxx`). You won't see it again.
+
+**Step 3: Configure `.env.local`**
+
+Add these variables to your `.env.local` file in the project root:
+
+```env
+# ==============================================================================
+# Nodemailer SMTP — Gmail (with App Password)
+# ==============================================================================
+
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_SECURE="false"
+
+# Your Gmail address (used as the sender)
+SMTP_USER="your.gmail@gmail.com"
+
+# The 16-character App Password generated in Step 2 above
+SMTP_PASS="xxxx xxxx xxxx xxxx"
+
+# The admin email that receives lead alert notifications
+# (can be same as SMTP_USER or a different mailbox)
+ADMIN_EMAIL="admin@urufurniture.com"
+```
+
+### Other SMTP Providers
+
+| Provider | SMTP_HOST | SMTP_PORT | SMTP_SECURE |
+|---|---|---|---|
+| **Gmail** | `smtp.gmail.com` | `587` | `false` |
+| **Outlook / Hotmail** | `smtp.office365.com` | `587` | `false` |
+| **Yahoo Mail** | `smtp.mail.yahoo.com` | `465` | `true` |
+| **Custom / cPanel** | your host's SMTP domain | `465` or `587` | `true`/`false` |
+
+> **Important**: For production deployments (Vercel, Netlify, etc.), add all SMTP variables in your hosting provider's **Environment Variables** dashboard. Never commit `.env.local` to Git — it is already listed in `.gitignore`.
+
+### Testing the Contact Form
+
+1. Start the dev server: `npm run dev`
+2. Navigate to `http://localhost:3000/contact`
+3. Fill in the form with your real email address and submit
+4. Check your inbox for the **customer confirmation** email
+5. Check the `ADMIN_EMAIL` inbox for the **lead alert** email
+
+---
+
 ## Running Locally
 
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Run development server
+# 2. Copy the environment template and fill in your values
+cp .env.example .env.local
+# Edit .env.local with your WhatsApp number, Sanity credentials, and SMTP config
+
+# 3. Run development server
 npm run dev
 
-# 3. Open in browser
-# Storefront: http://localhost:3000
-# Sanity Studio: http://localhost:3000/studio
+# 4. Open in browser
+# Storefront:      http://localhost:3000
+# Contact Page:    http://localhost:3000/contact
+# Sanity Studio:   http://localhost:3000/studio
 ```

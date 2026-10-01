@@ -61,11 +61,10 @@ export default function Footer({ onOpenWhatsApp }: { onOpenWhatsApp?: (subject: 
                 <span>hello@urufurniture.com</span>
               </a>
               <Link
-                href="/studio"
+                href="/products"
                 className="inline-flex items-center gap-1.5 text-xs text-[#716c65] hover:text-[#171614] pt-2"
               >
-                <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
-                <span>Sanity.io Content Studio</span>
+                <span>Browse All Models (6) →</span>
               </Link>
             </div>
           </div>
@@ -92,9 +91,9 @@ export default function Footer({ onOpenWhatsApp }: { onOpenWhatsApp?: (subject: 
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#8a847b] gap-4">
           <p>© {new Date().getFullYear()} URU Furniture. All rights reserved. Designed for Living.</p>
           <div className="flex items-center gap-6">
+            <Link href="/products" className="hover:text-[#171614]">All Sofas</Link>
             <Link href="/#custom" className="hover:text-[#171614]">Custom Sofas</Link>
             <Link href="/#visit" className="hover:text-[#171614]">Visit Store</Link>
-            <Link href="/studio" className="hover:text-[#171614]">Sanity Studio</Link>
           </div>
         </div>
       </div>
